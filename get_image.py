@@ -1,7 +1,7 @@
 import requests
 import os
 
-def get_image(url,title):
+def get_image(url,title,verbose=False):
     filename = url.split('/')[-1]
     path = title+filename
     try:
@@ -12,12 +12,13 @@ def get_image(url,title):
             with open (path, 'wb') as f:
                 f.write(r.content)
                 f.close()
-                # print("文件保存成功",path)
+                if verbose:
+                    print("文件保存成功",filename)
         else:
-            pass
-            # print("文件已存在",path)
+            if verbose:
+                print("文件已存在",filename)
     except:
-        print("爬取失败")
+        print("爬取失败",filename)
 
 if __name__ == '__main__':
     print("Enter image url:")
