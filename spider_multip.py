@@ -33,8 +33,20 @@ def crawl_webpage_recursive(url):
     try:
         response = requests.get(url,headers=heads)
         html = response.text
+        # print(html)
     except:
         print("爬取失败")
+
+    offensive_flag = re.search(r"<p>This gallery has been flagged as <strong>Offensive For Everyone</strong>.",html)
+
+    if offensive_flag != None:
+        kv = {'nw':"always"}
+        try:
+            response = requests.get(url,headers=heads,params=kv)
+            html = response.text
+            # print(html)
+        except:
+            print("爬取失败")
 
     enb_index = re.search(r"<img alt=.*?>",html).start()
     url = re.findall("<a href=.*?>", html[:enb_index])[-1][9:-2]
