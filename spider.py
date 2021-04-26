@@ -58,7 +58,7 @@ def crawl_webpage_recursive(url):
 
     match_list = re.findall(r"<h1>.*?</h1>",html)
     title_str=match_list[0][4:-5]
-    title_str=re.sub(r'[/\\\"|<>?\*]','',title_str)
+    title_str=re.sub(r'[/\\\"|<>?\*\:]','',title_str)
     print(title_str)
 
     match_list = re.findall(r"<div><span>.*?</span></div>",html)

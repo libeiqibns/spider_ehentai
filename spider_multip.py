@@ -38,7 +38,7 @@ def crawl_webpage_recursive(url):
 
     title_str=match_list[0][11:-5]
 
-    title_str=re.sub(r'[/\\\"|<>?\*]','',title_str)
+    title_str=re.sub(r'[/\\\"|<>?\*\:]','',title_str)
 
     print(title_str)
     # quit()

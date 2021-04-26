@@ -55,7 +55,7 @@ def prepare(url):
 
     title_str=match_list[0][11:-5]
 
-    title_str=re.sub(r'[/\\\"|<>?\*]','',title_str)
+    title_str=re.sub(r'[/\\\"|<>?\*\:]','',title_str)
 
     print(title_str)
     # quit()
@@ -109,6 +109,9 @@ if __name__ == '__main__':
             c.start()
 
         p1.join()
+
+        for c in consumer_list:
+            c.kill()
 
     end_time = time.time()
     print("用时",(end_time-start_time),"秒。")
