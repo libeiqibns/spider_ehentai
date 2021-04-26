@@ -2,7 +2,7 @@ import requests
 import re
 import os
 import time
-from get_image import get_image
+from get_page_image import get_page_image
 from multiprocessing import Process,JoinableQueue,cpu_count
 
 PROC_COUNT = 12
@@ -31,8 +31,8 @@ def crawl_webpage_recursive(url):
         except:
             print("爬取失败")
 
-    enb_index = re.search(r"<img alt=.*?>",html).start()
-    url = re.findall("<a href=.*?>", html[:enb_index])[-1][9:-2]
+    end_index = re.search(r"<img alt=.*?>",html).start()
+    url = re.findall("<a href=.*?>", html[:end_index])[-1][9:-2]
 
     match_list = re.findall(r"<h1.*?/h1>",html)
 
@@ -57,23 +57,18 @@ def producer(q, url):
         except:
             print("爬取失败")
 
-        match_list = re.findall(r"<img id=\"img\" src=.*?>",response.text)
-        img_url = re.split(r" ", match_list[0])[2][5:-1]
-        # print(img_url)
-
-        q.put(img_url)
+        q.put(url)
 
         match_list = re.findall(r"<a id=\"next\" onclick=\"return load_image.*?>",response.text)
         prev_url = url
         url = re.split(r"href=",match_list[0])[-1][1:-2]
 
-
     q.join()
 
 def consumer(q,title):
     while True:
-        img_url=q.get()
-        get_image(img_url,title,verbose=True)
+        url=q.get()
+        get_page_image(url,title,verbose=True)
         q.task_done()#发送信号给生产者的q.join()说，已经处理完从队列中拿走的一个项目
 
 
