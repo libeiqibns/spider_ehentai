@@ -5,6 +5,8 @@ import time
 from get_page_image import get_page_image
 from multiprocessing import Process,JoinableQueue,cpu_count
 
+MAX_PROC = 128
+
 heads = {
     'user-agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
 }
@@ -29,8 +31,8 @@ def prepare(url):
         except:
             print("爬取失败")
 
-    match_list = re.findall(r"Showing [0-9]+ - [0-9]+ of [0-9]+ images",html)
-    image_count = int(match_list[0].split(' ')[-2])
+    match_list = re.findall(r"Showing [0-9,]+ - [0-9,]+ of [0-9,]+ images",html)
+    image_count = int(re.sub(r'[,]','',match_list[0].split(' ')[-2]))
     page_count = image_count // 40 + 1
 
     match_list = re.findall(r"<a href=\"https://e-hentai.org/s/[0-9a-z]+/[0-9]+-[0-9]+\">",html)
@@ -96,7 +98,8 @@ if __name__ == '__main__':
         p1 = Process(target=producer,args=(q,urls))
 
         consumer_list=[]
-        for i in range(len(urls)):
+        num_proc = min(MAX_PROC,len(urls))
+        for i in range(num_proc):
             c=Process(target=consumer,args=(q,title))
             c.daemon = True
             consumer_list.append(c)
