@@ -1,9 +1,10 @@
 import requests
 import re
 import os
+import time
 from multiprocessing import Process,JoinableQueue,cpu_count
 
-PROC_COUNT = cpu_count()
+PROC_COUNT = 12
 
 heads = {
     'user-agent':"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"
@@ -12,6 +13,7 @@ heads = {
 def get_image(url,title,verbose=False):
     filename = url.split('/')[-1]
     path = title+filename
+    # print(title)
     try:
         if not os.path.exists(title):
             os.mkdir(title)
@@ -65,11 +67,14 @@ def producer(q, url):
     match_list = re.findall(r"<h1>.*?</h1>",html)
 
     title_str=match_list[0][4:-5]
-    print(title_str)
 
     match_list = re.findall(r"<img id=\"img\" src=.*?>",html)
     img_url = re.split(r" ", match_list[0])[2][5:-1]
     # print(img_url)
+
+    title_str=re.sub(r'[/\\\"|<>?\*]','',title_str)
+
+    print(title_str)
 
     if title_str != "":
         title_str = title_str+"//"
@@ -112,6 +117,8 @@ if __name__ == '__main__':
         urls.append(line)
         line = input()
     
+
+    start_time = time.time()
     i = 0
     for url in urls:
         i=i+1
@@ -132,4 +139,7 @@ if __name__ == '__main__':
             c.start()
 
         p1.join()
+
+    end_time = time.time()
+    print("用时",(end_time-start_time),"秒。")
     

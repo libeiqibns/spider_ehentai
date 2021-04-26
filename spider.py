@@ -1,6 +1,7 @@
 import requests
 import re
 import os
+import time
 from progress_bar import progressbar
 
 def get_image(url,title,verbose=False):
@@ -117,9 +118,12 @@ if __name__ == '__main__':
         urls.append(line)
         line = input()
     
+    start_time = time.time()
     i = 0
     for url in urls:
         i=i+1
         print("Crawling {0} / {1}".format(i,len(urls)))
         crawl_webpage_recursive(url)
-    
+
+    end_time = time.time()
+    print("用时",(end_time-start_time),"秒。")
